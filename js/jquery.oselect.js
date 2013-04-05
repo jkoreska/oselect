@@ -1,14 +1,12 @@
 /*!
- * © 2013 Luktek
- * oSelect v0.1.0
- * A more useful kind of <select/>
- */
+* © 2013 Luktek
+*/
 
 !(function ($) {
 
     'use strict';
 
-    var OSelect = function(element, options) {
+    var OSelect = function (element, options) {
         this.options = options;
         this.$element = $(element);
         this._init();
@@ -63,7 +61,7 @@
                         display: 'inline-block',
                     })
                     .append(this.$dropdown, this.$input, this.$button);
-            
+
             this.$element
                 .after(wrapper)
                 .detach()
@@ -131,7 +129,7 @@
         _buildDropdown: function () {
             var source = this.options.source.slice()
               , empty = {};
-            
+
             empty[this.options.labelProperty] = this.options.labelDefault;
             source.splice(0, 0, empty);
 
@@ -139,7 +137,7 @@
 
             for (var n = 0; n < source.length; n++) {
                 var key =
-                    source[n][this.options.valueProperty] || 'unknown';
+                    source[n][this.options.keyProperty] || 'null';
                 var title =
                     source[n][this.options.labelProperty];
                 var label =
@@ -152,7 +150,7 @@
                         .on('mousedown.oselect', $.proxy(this._itemMousedown, this))
                         .addClass(this._itemSelector(key))
                         .addClass('oselect-item')
-                        .css({ cursor:'pointer' })
+                        .css({ cursor: 'pointer' })
                         .data('oselect', source[n])
                         .attr('title', title)
                         .html(label)
@@ -198,7 +196,7 @@
             this.$button.remove();
             this.$dropdown.remove();
             this.$element.removeData('oselect');
-            
+
             $(document).unbind('.oselect');
 
             var wrapper =
@@ -210,9 +208,14 @@
                 .after(this.$element)
                 .remove();
         },
-        reload: function (data) {
-            if (data) this.options.source = data;
+        reload: function (data, selected) {
+            if (data)
+                this.options.source = data;
+
             this._buildDropdown();
+
+            if (selected)
+                this.selectKey(selected[this.options.keyProperty]);
         },
         select: function ($e) {
             var value = '';
@@ -220,7 +223,7 @@
 
             if ($e && $e.length) {
                 this._selected = $e;
-                value = $e.data('oselect')[this.options.valueProperty];
+                value = $e.data('oselect')[this.options.keyProperty];
             } else {
                 this._selected = this.$dropdown.find('.oselect-item').first();
             }
@@ -229,8 +232,8 @@
             this.activate(this._selected);
 
             var item = this._selected.data('oselect');
-            if (!item[this.options.valueProperty]) item = null;
-            
+            if (!item[this.options.keyProperty]) item = null;
+
             this.$element
                 .val(value)
                 .trigger('selected', item);
@@ -241,9 +244,9 @@
         selectActive: function () {
             this.select(this._active);
         },
-        selected: function() {
+        selected: function () {
             var item = this._selected.data('oselect');
-            if (!item[this.options.valueProperty]) item = null;
+            if (!item[this.options.keyProperty]) item = null;
             return item;
         },
         activate: function ($e) {
@@ -288,18 +291,18 @@
             this._hideDropdown();
             this._typing = null;
             this.$input.val(
-                this._selected
+                this._selected && this._selected.data('oselect')
                     ? this._selected.data('oselect')[this.options.labelProperty]
                     : this.options.labelDefault
             );
         },
     };
-    
+
     $.fn.oselect = function (option) {
         var retval = []
           , $element = this
           , args = arguments;
-        
+
         $element.each(function () {
             var $this = $(this)
               , oselect = $this.data('oselect');
@@ -314,7 +317,7 @@
                     $.error('Method ' + option + ' does not exist on jQuery.oselect');
             }
         });
-        
+
         if (0 == retval.length) retval = $element;
         else if (1 == retval.length) retval = retval[0];
 
@@ -323,10 +326,10 @@
 
     $.fn.oselect.defaults = {
         source: [],
-        valueProperty: 'Value',
-        labelProperty: 'Label',
+        keyProperty: 'id',
+        labelProperty: 'name',
         labelDefault: '',
-        filterProperties: [ 'Title', 'Description' ],
+        filterProperties: ['id', 'name'],
     };
 
 })(window.jQuery);
