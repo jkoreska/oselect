@@ -1,0 +1,20 @@
+/*!
+ * Luktek
+ */
+
+.oselect-dropdown {
+    background:#fff;
+    border:solid 1px #eee;
+}
+.oselect-item {
+    padding:3px 5px;
+    width:999px;
+    overflow:hidden;
+}
+.oselect-item:hover, .oselect-item.active {
+    background:#f8f8f8;
+}
+.oselect-item.selected {
+    background:#eee;
+    font-weight:bold;
+}
